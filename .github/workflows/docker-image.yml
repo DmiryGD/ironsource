@@ -17,4 +17,4 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag app:$(date +%s)
     - name: Restart app container
-      run: docker stop app || true && docker rm app || true && docker run -p 8080:8080 --name app app:$(date +%s)
+      run: docker stop app || true && docker rm app || true && docker run -d -p 8080:8080 --name app app:$(date +%s)
