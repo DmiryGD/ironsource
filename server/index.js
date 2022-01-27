@@ -7,10 +7,7 @@ const port = 8080;
 const host = '0.0.0.0';
 const redis_cluster = 'cluster.8k6cep.0001.usw2.cache.amazonaws.com';
 
-const redisconn = redis.createClient({
-    host: redis_cluster,
-    port: 6379
-});
+const redisconn = redis.createClient(6379, redis_cluster);
 redisconn.connect();
 redisconn.select(0);
 
