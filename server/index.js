@@ -21,7 +21,7 @@ function get_requests_count_from_redis() {
     redisconn.get('nginx_requests', function(error, obj) {
         if (obj) {
             console.log(obj);
-            requests_count = obj;
+            requests_count = parseInt(obj);
         }
     });
 }
