@@ -12,18 +12,17 @@ var redisconn = redis.createClient({
   host: redis_cluster
 });
 
-(async () => {
-  await redisconn.connect();
-  await redisconn.select(0);
-  get_requests_count_from_redis();
-});
-
+redisconn.select(0);
+get_requests_count_from_redis();
 
 var requests_count = 0;
 
 function get_requests_count_from_redis() {
     redisconn.get('nginx_requests', function(error, obj) {
-        consolr.log(obj);
+        if (obj) {
+            consolr.log(obj);
+            requests_count = obj;
+        }
     });
 }
 
