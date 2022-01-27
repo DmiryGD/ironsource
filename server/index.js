@@ -11,15 +11,29 @@ const redisconn = redis.createClient({
     host: redis_cluster,
     port: 6379
 });
+redisconn.connect();
 redisconn.select(0);
+
+var requests_count = 0;
+
+function get_requests_count_from_redis() {
+    redisconn.get('nginx_requests', function(error, obj) {
+        consolr.log(obj);
+    });
+}
+
+function set_requests_count_to_redis(count) {
+    redisconn.set('nginx_requests', count, function(error, obj) {});
+}
 
 const server = http.createServer((req, res) => {
   var urlParts = url.parse(req.url);
   var reqPath = urlParts.pathname;
   res.statusCode = 200;
-  console.log(req.url);
+  requests_count = requests_count + 1;
+  set_requests_count_to_redis(requests_count);
   if (reqPath == '/api') {
-      const msg = 'API references.\n'
+      const msg = `Count: ${requests_count}\n`;
       res.setHeader('Content-Type', 'text/plain');
       res.end(msg);
   } else {
@@ -35,6 +49,7 @@ const server = http.createServer((req, res) => {
   }
 });
 
+get_requests_count_from_redis();
 server.listen(port, host, () => {
   console.log(`Server running on http://${host}:${port}/`);
 });
