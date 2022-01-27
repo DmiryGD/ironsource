@@ -1,0 +1,59 @@
+---
+- name: Create directory for Prometheus configs
+  shell: mkdir -p /etc/prometheus
+- name: copy the nginx config file and restart nginx
+  template:
+    src: prometheus.yml
+    dest: /etc/prometheus/
+
+- name: Prometheus installation...
+  docker_container:
+    name: rometheus
+    image: prom/prometheus
+    state: started
+    restart: yes
+    volumes:
+      - /etc/prometheus:/etc/prometheus
+    ports:
+      "9090:9090"
+
+- name: Create directory for Grafana
+  shell: mkdir -p /etc/grafana/provisioning/datasources && mkdir -p /etc/grafana/provisioning/dashboards
+
+- name: Copy grafana datasources configs
+  template:
+    src: datasources.yml
+    dest: /etc/grafana/provisioning/datasources/
+
+- name: Copy grafana dashboard config
+  template:
+    src: dashboards.yml
+    dest: /etc/grafana/provisioning/dashboards/
+
+- name: Copy Grafana dashboards
+  copy:
+    src: nginx_rev1.json
+    dest: /etc/grafana/provisioning/dashboards/
+
+- name: Run grafana
+  docker_container:
+    name: grafana
+    image: grafana/grafana-enterprise:8.2.0
+    state: started
+    restart: yes
+    volumes:
+      - /etc/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources/
+      - /etc/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards/
+    ports:
+      "3000:3000"
+
+- name: Nginx exporter
+  docker_container:
+    name: nginx-prometheus-exporter
+    image: nginx/nginx-prometheus-exporter:0.10.0
+    state: started
+    restart: yes
+    ports:
+      "9113:9113"
+    command:
+      "-nginx.scrape-uri=http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/stub_status"

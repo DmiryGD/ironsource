@@ -34,12 +34,12 @@ const server = http.createServer((req, res) => {
   var urlParts = url.parse(req.url);
   var reqPath = urlParts.pathname;
   res.statusCode = 200;
-  requests_count = requests_count + 1;
-  set_requests_count_to_redis(requests_count);
   if (reqPath == '/api') {
       const msg = `Count: ${requests_count}\n`;
       res.setHeader('Content-Type', 'text/plain');
       res.end(msg);
+      requests_count = requests_count + 1;
+      set_requests_count_to_redis(requests_count);
   } else {
     fs.readFile('/app/index.html', 'utf8' , (err, data) => {
       if (err) {

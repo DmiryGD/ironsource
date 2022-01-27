@@ -1,0 +1,14 @@
+---
+- name: Docker installation...
+  shell: sudo yum install docker -y
+- name: Docker deps installation...
+  shell: sudo pip3 install docker-py
+- name: start docker
+  service:
+      name: docker
+      state: started
+- name: Add the user 'ec2-user' the group 'docker'
+  ansible.builtin.user:
+    name: ec2-user
+    groups: docker
+    append: yes

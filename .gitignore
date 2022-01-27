@@ -1,2 +1,7 @@
-server/node_modules
-server/package-lock.json
+application/server/node_modules
+application/server/package-lock.json
+terraform/.terraform.lock.hcl
+terraform/.terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/env-variables.tf

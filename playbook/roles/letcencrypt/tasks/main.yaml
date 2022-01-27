@@ -1,0 +1,13 @@
+---
+- name: Instal epel repo
+  shell: sudo amazon-linux-extras install epel -y
+- name: Certbot install
+  shell: sudo yum install certbot python2-certbot-nginx -y
+- name: create letsencrypt directory
+  file: name=/var/www/letsencrypt state=directory
+
+- name: name: Add crontab to renew certificates
+  cron: minute="30" hour="2" weekday="1" job="/usr/bin/certbot renew >> /var/log/le-renew.log"
+
+- name: Add crontab to reload server
+  cron: minute="35" hour="2" weekday="1" job="/usr/bin/systemctl reload nginx"

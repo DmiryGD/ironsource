@@ -1,0 +1,15 @@
+---
+- name: nginx installation...
+  shell: sudo amazon-linux-extras install nginx1 -y
+- name: start nginx
+  service:
+      name: nginx
+      state: started
+- name: copy the nginx config file and restart nginx
+  copy:
+    src: site.cfg
+    dest: /etc/nginx/conf.d/site.conf
+- name: restart nginx 
+  service:
+    name: nginx
+    state: restarted
