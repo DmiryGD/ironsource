@@ -7,9 +7,17 @@ const port = 8080;
 const host = '0.0.0.0';
 const redis_cluster = 'cluster.8k6cep.0001.usw2.cache.amazonaws.com';
 
-const redisconn = redis.createClient(6379, redis_cluster);
-redisconn.connect();
-redisconn.select(0);
+var redisconn = redis.createClient({
+  port: 6379,
+  host: redis_cluster
+});
+
+(async () => {
+  await redisconn.connect();
+  await redisconn.select(0);
+  get_requests_count_from_redis();
+});
+
 
 var requests_count = 0;
 
@@ -46,7 +54,6 @@ const server = http.createServer((req, res) => {
   }
 });
 
-get_requests_count_from_redis();
 server.listen(port, host, () => {
   console.log(`Server running on http://${host}:${port}/`);
 });
