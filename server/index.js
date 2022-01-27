@@ -3,31 +3,31 @@ const fs = require('fs');
 const url = require('url');
 
 const port = 8080;
+const host = '0.0.0.0';
 
 const server = http.createServer((req, res) => {
   var urlParts = url.parse(req.url);
   var reqPath = urlParts.pathname;
   res.statusCode = 200;
-  if (reqPath !== '/api') {
-    fs.readFile('api.txt', 'utf8' , (err, data) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      res.end(data);
-    })
+  console.log(req.url);
+  if (reqPath == '/api') {
+      const msg = 'API references.\n'
+      res.setHeader('Content-Type', 'text/plain');
+      res.end(msg);
   } else {
-    fs.readFile('index.html', 'utf8' , (err, data) => {
+    fs.readFile('/app/index.html', 'utf8' , (err, data) => {
       if (err) {
-        console.error(err)
-        return
+        console.log(err)
+        res.setHeader('Content-Type', 'text/plain');
+        res.end("404 Not found");
+      } else {
+        res.end(data);
       }
-      res.end(data);
     })
   }
 });
 
-server.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}/`);
+server.listen(port, host, () => {
+  console.log(`Server running on http://${host}:${port}/`);
 });
 
