@@ -1,9 +1,17 @@
 const http = require('http');
 const fs = require('fs');
 const url = require('url');
+const redis = require('redis');
 
 const port = 8080;
 const host = '0.0.0.0';
+const redis_cluster = 'cluster.8k6cep.0001.usw2.cache.amazonaws.com';
+
+const redisconn = redis.createClient({
+    host: redis_cluster,
+    port: 6379
+});
+redisconn.select(0);
 
 const server = http.createServer((req, res) => {
   var urlParts = url.parse(req.url);
